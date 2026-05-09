@@ -15,13 +15,23 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$REPO_ROOT"
 
 # ---------------------------------------------------------------------------
-# 0. Pin HuggingFace cache to local disk.
-#    /workspace on vast.ai is a network volume that can produce "Stale file
-#    handle" errors when HF copies model blobs. /root is local SSD.
+# 0. Environment fixes for vast.ai boxes.
 # ---------------------------------------------------------------------------
+
+# HuggingFace cache → local SSD. /workspace is a network volume that can
+# produce "Stale file handle" errors when HF copies model blobs.
 export HF_HOME=/root/.cache/huggingface
 grep -qxF 'export HF_HOME=/root/.cache/huggingface' ~/.bashrc \
     || echo 'export HF_HOME=/root/.cache/huggingface' >> ~/.bashrc
+
+# DeepSpeed CUDA version check bypass. vast.ai images often have a system
+# CUDA (e.g. 13.1) that is newer than the CUDA torch was compiled with
+# (e.g. 12.8). DeepSpeed refuses to JIT-compile CPU-offload extensions when
+# the versions don't match exactly. CUDA 13.x is backward-compatible with
+# 12.8 extensions, so skipping the check is safe.
+export DS_SKIP_CUDA_CHECK=1
+grep -qxF 'export DS_SKIP_CUDA_CHECK=1' ~/.bashrc \
+    || echo 'export DS_SKIP_CUDA_CHECK=1' >> ~/.bashrc
 
 # ---------------------------------------------------------------------------
 # 1. PyTorch with CUDA 12.8 (Blackwell-capable; works on Ampere/Hopper too).
