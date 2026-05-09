@@ -28,8 +28,8 @@ deepspeed --num_gpus 1 main.py \
    --per_device_training_batch_size 1 \
    --generation_batches 1 \
    --ppo_epochs 1 \
-   --max_answer_seq_len 512 \
-   --max_prompt_seq_len 512 \
+   --max_answer_seq_len 256 \
+   --max_prompt_seq_len 256 \
    --actor_learning_rate ${Actor_Lr} \
    --critic_learning_rate ${Critic_Lr} \
    --actor_weight_decay 0.1 \
@@ -44,6 +44,7 @@ deepspeed --num_gpus 1 main.py \
    --critic_zero_stage 2 \
    --actor_gradient_checkpointing \
    --critic_gradient_checkpointing \
+   --offload \
    --offload_reference_model \
    --offload_icm_model \
    --dtype fp16 \

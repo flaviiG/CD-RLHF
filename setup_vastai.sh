@@ -15,6 +15,15 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$REPO_ROOT"
 
 # ---------------------------------------------------------------------------
+# 0. Pin HuggingFace cache to local disk.
+#    /workspace on vast.ai is a network volume that can produce "Stale file
+#    handle" errors when HF copies model blobs. /root is local SSD.
+# ---------------------------------------------------------------------------
+export HF_HOME=/root/.cache/huggingface
+grep -qxF 'export HF_HOME=/root/.cache/huggingface' ~/.bashrc \
+    || echo 'export HF_HOME=/root/.cache/huggingface' >> ~/.bashrc
+
+# ---------------------------------------------------------------------------
 # 1. PyTorch with CUDA 12.8 (Blackwell-capable; works on Ampere/Hopper too).
 # ---------------------------------------------------------------------------
 echo "[1/4] Installing PyTorch (cu128 wheels)..."

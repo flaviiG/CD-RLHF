@@ -4,10 +4,9 @@
 # CD-RLHF is compared. Use run_qwen2_5_0_5b_cdrlhf.sh for the CD-RLHF variant.
 #
 # Memory footprint on 32GB VRAM (fp16, ZeRO-2, 0.5B model x4 copies):
-#   actor (train) + critic (train) + ref (frozen) + reward (frozen)
-#   ~= 8 + 8 + 1 + 1 + activations/KV-cache  ≈ 22-26 GB peak.
-# Both actor and critic use gradient checkpointing to cut activation memory.
-# Reference model is offloaded to CPU to free VRAM during PPO updates.
+#   actor (train) + critic (train) + ref (frozen, CPU-offloaded) + reward (frozen)
+#   Optimizer state for actor+critic offloaded to CPU via --offload.
+#   Sequence lengths reduced to 256+256 (from 512+512) to cut KV-cache 4×.
 #
 # Effective batch size = per_device_train * num_gpus * grad_accum = 1 * 1 * 64 = 64
 # (smaller than the paper's 256 to keep wall-clock manageable on a single GPU;
@@ -34,8 +33,8 @@ deepspeed --num_gpus 1 main.py \
    --per_device_training_batch_size 1 \
    --generation_batches 1 \
    --ppo_epochs 1 \
-   --max_answer_seq_len 512 \
-   --max_prompt_seq_len 512 \
+   --max_answer_seq_len 256 \
+   --max_prompt_seq_len 256 \
    --actor_learning_rate ${Actor_Lr} \
    --critic_learning_rate ${Critic_Lr} \
    --actor_weight_decay 0.1 \
@@ -50,6 +49,7 @@ deepspeed --num_gpus 1 main.py \
    --critic_zero_stage 2 \
    --actor_gradient_checkpointing \
    --critic_gradient_checkpointing \
+   --offload \
    --offload_reference_model \
    --dtype fp16 \
    --output_dir $OUTPUT \
