@@ -49,9 +49,8 @@ deepspeed --num_gpus 1 main.py \
    --critic_zero_stage 2 \
    --actor_gradient_checkpointing \
    --critic_gradient_checkpointing \
-   --offload \
    --offload_reference_model \
-   --dtype fp16 \
+   --dtype bf16 \
    --output_dir $OUTPUT \
    --icm_learning_rate 1e-5 \
    --eta 0.0 \
