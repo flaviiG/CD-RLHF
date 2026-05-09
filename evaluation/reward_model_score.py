@@ -74,7 +74,7 @@ def main():
     parser.add_argument("--model-name", type=str, default=None, help="Name of the actor model for saving results.")
     parser.add_argument("--reward-model", type=str, required=True, help="Path to the reward model.")
     parser.add_argument("--dataset-path", type=str, default="openai/summarize_from_feedback", help="Path to the dataset.")
-    parser.add_argument("--gpus", type=str, default="0,1,2,3,4,5,6,7", help="GPUs to use for evaluation, separated by commas.")
+    parser.add_argument("--gpus", type=str, default="0", help="GPUs to use for evaluation, separated by commas.")
     parser.add_argument("--batch-size", type=int, default=32, help="Batch size for evaluation.")
     parser.add_argument("--ref-scores", action='store_true', help="Scoring references provided by dataset.")
     args = parser.parse_args()

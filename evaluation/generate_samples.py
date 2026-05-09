@@ -50,7 +50,7 @@ if __name__ == "__main__":
     parser.add_argument("--model-path", type=str, required=True, help="Path to the actor model.")
     parser.add_argument("--model-name", type=str, default=None, help="Name of the model for saving results.")
     parser.add_argument("--dataset-path", type=str, default="openai/summarize_from_feedback", help="Path to the dataset.")
-    parser.add_argument("--gpus", type=str, default="0,1,2,3,4,5,6,7", help="GPUs to use for evaluation, separated by commas.")
+    parser.add_argument("--gpus", type=str, default="0", help="GPUs to use for evaluation, separated by commas.")
     args = parser.parse_args()
 
     torch.manual_seed(1234)

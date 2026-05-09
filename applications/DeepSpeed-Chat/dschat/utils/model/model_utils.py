@@ -103,11 +103,11 @@ def create_hf_model(model_class,
         dschf = None
     if rlhf_training:
         # the weight loading is handled by create critic model
-        model = model_class.from_config(model_config, attn_implementation="flash_attention_2")
+        model = model_class.from_config(model_config, attn_implementation="sdpa")
     else:
         model = model_class.from_pretrained(
             model_name_or_path,
-            attn_implementation="flash_attention_2",
+            attn_implementation="sdpa",
             from_tf=bool(".ckpt" in model_name_or_path),
             config=model_config)
 
