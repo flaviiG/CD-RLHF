@@ -151,13 +151,37 @@ def create_critic_model(model_name_or_path,
 
         if not os.path.isdir(model_name_or_path):
             model_name_or_path = snapshot_download(model_name_or_path)
-        model_ckpt_path = os.path.join(model_name_or_path, 'pytorch_model.bin')
-        assert os.path.exists(
-            model_ckpt_path
-        ), f"Cannot find model checkpoint at {model_ckpt_path}"
+
+        # Resolve checkpoint path. Modern transformers saves as model.safetensors;
+        # the RM training code (step2) saves only into step_N/ subdirectories with
+        # no top-level file. We prefer the top-level file, then fall back to the
+        # highest-numbered step_N/ subdir.
+        def _find_ckpt(directory):
+            for fname in ('model.safetensors', 'pytorch_model.bin'):
+                p = os.path.join(directory, fname)
+                if os.path.exists(p):
+                    return p
+            step_dirs = [
+                d for d in os.listdir(directory)
+                if d.startswith('step_') and os.path.isdir(os.path.join(directory, d))
+            ]
+            if step_dirs:
+                latest = max(step_dirs, key=lambda d: int(d.split('_')[1]))
+                return _find_ckpt(os.path.join(directory, latest))
+            return None
+
+        model_ckpt_path = _find_ckpt(model_name_or_path)
+        if model_ckpt_path is None:
+            raise FileNotFoundError(
+                f"Cannot find model checkpoint in {model_name_or_path}. "
+                f"Expected model.safetensors, pytorch_model.bin, or a step_N/ subfolder.")
 
         start = time.time()
-        model_ckpt_state_dict = torch.load(model_ckpt_path, map_location='cpu')
+        if model_ckpt_path.endswith('.safetensors'):
+            from safetensors.torch import load_file as safetensors_load
+            model_ckpt_state_dict = safetensors_load(model_ckpt_path, device='cpu')
+        else:
+            model_ckpt_state_dict = torch.load(model_ckpt_path, map_location='cpu', weights_only=False)
         end = time.time()
         print_rank_0(f">Creating model from_config took {end - start} seconds",
                      None)
