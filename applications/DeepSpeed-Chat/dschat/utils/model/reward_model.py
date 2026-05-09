@@ -49,7 +49,7 @@ class RewardModel(nn.Module):
                 use_cache=False):
         loss = None
 
-        if self.config.model_type == "llama" or self.config.model_type == "gemma":
+        if self.config.model_type in ("llama", "gemma", "qwen2"):
             kwargs = dict()
         else:
             kwargs = dict(head_mask=head_mask)
@@ -144,7 +144,7 @@ class RewardModel(nn.Module):
                       prompt_length=0,
                       use_cache=False):
 
-        if self.config.model_type == "llama" or self.config.model_type == "gemma":
+        if self.config.model_type in ("llama", "gemma", "qwen2"):
             kwargs = dict()
         else:
             kwargs = dict(head_mask=head_mask)
