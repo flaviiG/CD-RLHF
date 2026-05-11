@@ -24,15 +24,6 @@ export HF_HOME=/root/.cache/huggingface
 grep -qxF 'export HF_HOME=/root/.cache/huggingface' ~/.bashrc \
     || echo 'export HF_HOME=/root/.cache/huggingface' >> ~/.bashrc
 
-# DeepSpeed CUDA version check bypass. vast.ai images often have a system
-# CUDA (e.g. 13.1) that is newer than the CUDA torch was compiled with
-# (e.g. 12.8). DeepSpeed refuses to JIT-compile CPU-offload extensions when
-# the versions don't match exactly. CUDA 13.x is backward-compatible with
-# 12.8 extensions, so skipping the check is safe.
-export DS_SKIP_CUDA_CHECK=1
-grep -qxF 'export DS_SKIP_CUDA_CHECK=1' ~/.bashrc \
-    || echo 'export DS_SKIP_CUDA_CHECK=1' >> ~/.bashrc
-
 # ---------------------------------------------------------------------------
 # 1. PyTorch with CUDA 12.8 (Blackwell-capable; works on Ampere/Hopper too).
 # ---------------------------------------------------------------------------

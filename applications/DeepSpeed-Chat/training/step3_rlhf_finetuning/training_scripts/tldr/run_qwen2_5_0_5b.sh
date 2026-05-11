@@ -51,6 +51,11 @@ deepspeed --num_gpus 1 main.py \
    --critic_gradient_checkpointing \
    --offload_reference_model \
    --dtype bf16 \
+   --actor_lora_dim 16 \
+   --actor_lora_module_name "model.layers." \
+   --critic_lora_dim 16 \
+   --critic_lora_module_name "model.layers." \
+   --only_optimize_lora \
    --output_dir $OUTPUT \
    --icm_learning_rate 1e-5 \
    --eta 0.0 \
