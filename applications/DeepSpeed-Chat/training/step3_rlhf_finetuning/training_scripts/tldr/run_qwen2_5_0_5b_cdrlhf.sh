@@ -60,7 +60,7 @@ deepspeed --num_gpus 1 main.py \
    --kl_ctl 0.05 \
    --print_answers \
    --print_answers_interval 100 \
-   --save_steps 1000 \
+   --save_steps 50000 \
    --enable_tensorboard \
    --tensorboard_path $OUTPUT/tensorboard \
     &>> $OUTPUT/training.log
