@@ -45,7 +45,6 @@ deepspeed --num_gpus 1 main.py \
    --actor_gradient_checkpointing \
    --critic_gradient_checkpointing \
    --offload_reference_model \
-   --offload_icm_model \
    --dtype bf16 \
    --actor_lora_dim 16 \
    --actor_lora_module_name "model.layers." \
